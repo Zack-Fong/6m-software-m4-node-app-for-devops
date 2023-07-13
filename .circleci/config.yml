@@ -31,17 +31,46 @@ jobs:
       - docker/check
       - docker/build:
           image: zackfong/education-space
-          tag: 0.1.0
+          tag: << pipeline.git.tag >>
       - docker/push:
           image: zackfong/education-space
-          tag: 0.1.0
+          tag: << pipeline.git.tag >>
+  deploy:
+    docker:
+      - image: cimg/node:16.10
+    steps:
+      - setup_remote_docker
+      - heroku/install
+      - checkout
+      - run:
+          name: Heroku Container Push
+          command: |
+            heroku container:login
+            heroku container:push web -a zack-fong-devops
+            heroku container:release web -a zack-fong-devops
+
 workflows:
   simple_workflow:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              only: main
       - test:
-          requires:
-            - build
+          filters:
+            branches:
+              only: main
+          trigger:
+            - main
       - build-and-push:
           requires:
             - test
+            filters:
+              tags:
+                only: /^v.*/
+      - deploy:
+          requires:
+            - build-and-push
+            filters:
+              tags:
+                only: /^v.*/
