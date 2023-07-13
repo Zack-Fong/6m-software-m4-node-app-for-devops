@@ -1,51 +1,40 @@
 version: 2.1
 orbs:
   node: circleci/node@5.0.1
-  docker: circleci/docker@2.2.0
+  docker: circleci/docker@2.1.4
 jobs:
   build:
     docker:
-      - image: circleci/android:api-29-node
-        auth:
-          username: $DOCKER_HUB_USERNAME
-          password: $DOCKER_HUB_PASSWORD
+      - image: cimg/node:16.10
     steps:
       - checkout
       - node/install-packages:
           pkg-manager: npm
       - run: |
-          echo Installing dependencies...”
+          echo "Installing dependencies..."
           npm install
   test:
     docker:
-      - image: circleci/android:api-29-node
+      - image: cimg/node:16.10
     steps:
       - checkout
       - node/install-packages:
           pkg-manager: npm
       - run: |
-          echo “Running tests...”
+          echo "Running tests..."
           npm run test
-
-  publish:
-    docker:
-      - image: circleci/node:16.10
+  build-and-push:
+    executor: docker/docker
     steps:
+      - setup_remote_docker
       - checkout
-      - setup_remote_docker:
-          version: 20.10.7
-      - run:
-          name: Build and push Docker image
-          command: |
-            echo "Logging in to Docker Hub..."
-            echo "$DOCKERPASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-            echo "Building Docker image..."
-            docker build -t zackfong/education-space:initial .
-            echo "Tagging Docker image..."
-            docker tag zackfong/education-space:initial zackfong/education-space:version1
-            echo "Pushing Docker image..."
-            docker push zackfong/education-space:version1
-
+      - docker/check
+      - docker/build:
+          image: zackfong/education-space:initial
+          tag: 0.1.0
+      - docker/push:
+          image: zackfong/education-space:initial
+          tag: 0.1.0
 workflows:
   simple_workflow:
     jobs:
@@ -53,6 +42,6 @@ workflows:
       - test:
           requires:
             - build
-      - publish:
+      - build-and-push:
           requires:
             - test
