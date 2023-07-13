@@ -60,17 +60,15 @@ workflows:
           filters:
             branches:
               only: main
-          trigger:
-            - main
       - build-and-push:
           requires:
             - test
-            filters:
-              tags:
-                only: /^v.*/
+          filters:
+            tags:
+              only: /^v.*/
       - deploy:
           requires:
             - build-and-push
-            filters:
-              tags:
-                only: /^v.*/
+          filters:
+            tags:
+              only: /^v.*/
