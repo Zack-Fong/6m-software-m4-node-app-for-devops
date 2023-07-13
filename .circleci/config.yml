@@ -6,9 +6,6 @@ jobs:
   build:
     docker:
       - image: cimg/node:16.10
-    environment:
-      DOCKER_USERNAME: $DOCKER_USERNAME # Add Docker Hub username as an environment variable
-      DOCKER_PASSWORD: $DOCKER_PASSWORD # Add Docker Hub password as an environment variable
     steps:
       - checkout
       - node/install-packages:
@@ -41,7 +38,7 @@ jobs:
           name: Build and push Docker image
           command: |
             echo "Logging in to Docker Hub..."
-            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            echo "<DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
             echo "Building Docker image..."
             docker build -t zackfong/education-space:initial .
             echo "Tagging Docker image..."
