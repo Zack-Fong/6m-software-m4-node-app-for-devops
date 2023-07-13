@@ -31,7 +31,6 @@ jobs:
       - docker/check
       - docker/build:
           image: zackfong/education-space:init
-          tag: 0.1.0
       - docker/push:
           image: zackfong/education-space:init
           tag: 0.1.0
