@@ -30,9 +30,10 @@ jobs:
       - checkout
       - docker/check
       - docker/build:
-          image: zackfong/education-space:init
+          image: zackfong/education-space
+          tag: 0.1.0
       - docker/push:
-          image: zackfong/education-space:init
+          image: zackfong/education-space
           tag: 0.1.0
 workflows:
   simple_workflow:
