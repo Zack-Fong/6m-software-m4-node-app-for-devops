@@ -16,9 +16,6 @@ jobs:
   test:
     docker:
       - image: circleci/android:api-29-node
-        auth:
-          username: $DOCKER_HUB_USERNAME
-          password: $DOCKER_HUB_PASSWORD
     steps:
       - checkout
       - node/install-packages:
